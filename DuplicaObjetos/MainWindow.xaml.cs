@@ -16,13 +16,20 @@ using System.Windows.Shapes;
 
 namespace DuplicaObjetos
 {
-    public class Produto
+    public class Produto : ICloneable
     {
         public int id { get; set; }
 
         public string nome { get; set; }
 
         public decimal valor { get; set; }
+        
+        // Segunda opção sem Json.
+        // Efetua o Clone do objeto.
+        public object Clone()
+        {
+            return this.MemberwiseClone();
+        }
     }
 
     /// <summary>
@@ -30,11 +37,6 @@ namespace DuplicaObjetos
     /// </summary>
     public partial class MainWindow : Window
     {
-
-       
-
-
-
         public MainWindow()
         {
             InitializeComponent();
@@ -48,10 +50,14 @@ namespace DuplicaObjetos
             p1.nome = "PRODUTO TESTE";
             p1.valor = (decimal)1.99;
 
-
             Produto p2 = (Produto)CloneObject(p1, typeof(Produto));
-
             p2.nome = "PRODUTO JSON";
+            p1.valor = (decimal)2.00;
+            
+            // Usando ICloneable.Clone()
+            Produto p3 = (Produto)p1.Clone();
+            p3.nome = "PRODUTO ICloneable";
+            p3.valor = (decimal)3.00;
 
             //Produto p2 = new Produto
             //{
@@ -60,17 +66,19 @@ namespace DuplicaObjetos
             //    valor = p1.valor
             //};
 
-            Produto p3 = p1;
+            Produto p4 = p1;
 
-
+            MessageBox.Show("P3: " + p3.nome);
             MessageBox.Show("P2: " + p2.nome);
             MessageBox.Show("P1: " + p1.nome);
 
             p1.nome = "PRODUTO MODIFICADO";
+            p3.nome = "PRODUTO ICloneable 3 - By https://github.com/rfiori";
 
+            MessageBox.Show("P4: " + p4.nome);
+            MessageBox.Show("P3: " + p3.nome);
             MessageBox.Show("P2: " + p2.nome);
             MessageBox.Show("P1: " + p1.nome);
-
         }
 
         public static object CloneObject(object original, Type tipo)
@@ -79,7 +87,5 @@ namespace DuplicaObjetos
 
             return JsonConvert.DeserializeObject(serializacao, tipo);
         }
-
-
     }
 }
